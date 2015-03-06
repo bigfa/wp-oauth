@@ -1,5 +1,4 @@
 <?php
-require('wechat.php');
 function oauth_http($method,$header,$url,$data){
     $method = $method ? $method : 'get';
     if( $method == 'get') {
@@ -26,17 +25,5 @@ function oauth_http($method,$header,$url,$data){
     }
 
 }
-
-
-
-function social_oauth(){
-    if (isset($_GET['code']) && isset($_GET['type']) && $_GET['type'] == 'weixin'){
-
-        wechat_oauth();
-
-    }
-
-}
-add_action('init','social_oauth')
 
 
