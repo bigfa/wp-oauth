@@ -1,7 +1,7 @@
 <?php
 
-define('WB_APPID','');
-define('WB_APPSECRET','');
+define('WB_APPID','');//appkey
+define('WB_APPSECRET','');//appsecret
 function weibo_oauth(){
     $code = $_GET['code'];
     $url = "https://api.weibo.com/oauth2/access_token";
@@ -72,8 +72,7 @@ add_action('init','social_oauth_weibo')
 
 
 function weibo_oauth_url(){
-    $_SESSION ['state'] = md5 ( uniqid ( rand (), true ) );
-    $appkey = '';
+
     $url = 'https://api.weibo.com/oauth2/authorize?client_id=' . WB_APPID . '&response_type=code&redirect_uri=' . urlencode (home_url('/?type=sina'));
     return $url;
 }
