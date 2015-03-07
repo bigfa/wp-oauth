@@ -2,3 +2,5 @@
 
 
 <a href="http://fatesinger.com/74619">微博登录</a>
+
+<a href="http://fatesinger.com/75041">QQ互联登录</a>
