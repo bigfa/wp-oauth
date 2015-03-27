@@ -61,19 +61,19 @@ function weibo_oauth(){
     }
 }
 
-function social_oauth_weibo(){
-    if (isset($_GET['code']) && isset($_GET['type']) && $_GET['type'] == 'sina'){
+function social_oauth_douban(){
+    if (isset($_GET['code']) && isset($_GET['type']) && $_GET['type'] == 'douban'){
 
-        weibo_oauth();
+        douban_oauth();
 
     }
 
 }
-add_action('init','social_oauth_weibo')
+add_action('init','social_oauth_douban')
 
 
-function weibo_oauth_url(){
+function douban_oauth_url(){
 
-    $url = 'https://api.weibo.com/oauth2/authorize?client_id=' . WB_APPID . '&response_type=code&redirect_uri=' . urlencode (home_url('/?type=sina'));
+    $url = 'https://www.douban.com/service/auth2/auth?client_id=' . DB_APPID . '&scope=shuo_basic_r,shuo_basic_w,douban_basic_common&response_type=code&redirect_uri=' . urlencode (home_url('/?type=sdouban');
     return $url;
 }
