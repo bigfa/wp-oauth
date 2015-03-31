@@ -2,6 +2,7 @@
 
 define('WX_APPID','');
 define('WX_APPSECRET','');
+
 function wechat_oauth(){
     $code = $_GET['code'];
     $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" . WX_APPID . "&secret=" . WX_APPSECRET . "&code=" . $code . "&grant_type=authorization_code";
@@ -13,7 +14,6 @@ function wechat_oauth(){
     if(is_user_logged_in()){
         $this_user = wp_get_current_user();
         update_user_meta($this_user->ID ,"weixin_uid",$weixin_id);
-        //update_user_meta($this_user->ID ,"weixin_access_token",$weixin_access_token);
         echo '<script>if( window.opener ) {window.opener.location.reload();
 						window.close();
 						}else{
@@ -37,11 +37,10 @@ function wechat_oauth(){
             echo '<script>if( window.opener ) {window.opener.location.reload();
 						window.close();
 						}else{
-						window.location.href = "'.home_url('/me/setting?2').'";
+						window.location.href = "' . home_url() . '";
 						}</script>';
 
         }else{
-            //update_user_meta($oauth_user[0]->ID ,"weixin_access_token",$sina_access_token);
             wp_set_auth_cookie($oauth_user[0]->ID);
             echo '<script>if( window.opener ) {window.opener.location.reload();
 						window.close();
@@ -51,6 +50,13 @@ function wechat_oauth(){
         }
     }
 }
+
+function social_oauth_wechat(){
+    if (isset($_GET['code']) && isset($_GET['type']) && $_GET['type'] == 'wechat'){
+        wechat_oauth();
+    }
+}
+add_action('init','social_oauth_wechat')
 
 function wechat_oauth_url(){
     $_SESSION ['state'] = md5 ( uniqid ( rand (), true ) );
