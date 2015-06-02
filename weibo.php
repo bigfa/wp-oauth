@@ -2,6 +2,15 @@
 
 define('WB_APPID','');//appkey
 define('WB_APPSECRET','');//appsecret
+
+function wb_ouath_redirect(){
+    echo '<script>if( window.opener ) {window.opener.location.reload();
+                        window.close();
+                        }else{
+                        window.location.href = "'.home_url().'";
+                        }</script>';
+}
+
 function weibo_oauth(){
     $code = $_GET['code'];
     $url = "https://api.weibo.com/oauth2/access_token";
@@ -13,22 +22,21 @@ function weibo_oauth(){
         wp_redirect(home_url('/?3'.$sina_uid));
         exit;
     }
+    $get_user_info = "https://api.weibo.com/2/users/show.json?uid=".$sina_uid."&access_token=".$sina_access_token;
+    $data = get_url_contents ( $get_user_info );
+    $str  = json_decode($data , true);
+    $username = $str['screen_name'];
+    $avatar = $str['profile_image_url'];
     if(is_user_logged_in()){
         $this_user = wp_get_current_user();
         update_user_meta($this_user->ID ,"sina_uid",$sina_uid);
         update_user_meta($this_user->ID ,"sina_access_token",$sina_access_token);
-        echo '<script>if( window.opener ) {window.opener.location.reload();
-						window.close();
-						}else{
-						window.location.reload()";
-						}</script>';
+        update_user_meta($this_user->ID ,"sina_avatar",$str['profile_image_url']);
+        wb_ouath_redirect();
     }else{
         $user_weibo = get_users(array("meta_key "=>"sina_uid","meta_value"=>$sina_uid));
         if(is_wp_error($user_weibo) || !count($user_weibo)){
-            $get_user_info = "https://api.weibo.com/2/users/show.json?uid=".$sina_uid."&access_token=".$sina_access_token;
-            $data = get_url_contents ( $get_user_info );
-            $str  = json_decode($data , true);
-            $username = $str['screen_name'];
+            
             $login_name = wp_create_nonce($sina_uid);
             $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
             $userdata=array(
@@ -41,21 +49,14 @@ function weibo_oauth(){
             wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);
             update_user_meta($user_id ,"sina_uid",$sina_uid);
             update_user_meta($user_id ,"sina_access_token",$sina_access_token);
-            echo '<script>if( window.opener ) {window.opener.location.reload();
-						window.close();
-						}else{
-						window.location.href = "'.home_url().'";
-						}</script>';
+            update_user_meta($user_id ,"sina_avatar",$str['profile_image_url']);
+            wb_ouath_redirect();
 
         }else{
             update_user_meta($user_weibo[0]->ID ,"sina_access_token",$sina_access_token);
+            update_user_meta($user_weibo[0]->ID ,"sina_avatar",$str['profile_image_url']);
             wp_set_auth_cookie($user_weibo[0]->ID);
-
-            echo '<script>if( window.opener ) {window.opener.location.reload();
-						window.close();
-						}else{
-						window.location.href = "'.home_url().'";
-						}</script>';
+            wb_ouath_redirect();
         }
     }
 }
