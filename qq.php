@@ -85,7 +85,7 @@ function social_oauth_qq(){
         qq_oauth();
     }
 }
-add_action('init','social_oauth_qq')
+add_action('init','social_oauth_qq');
 
 
 function qq_oauth_url(){
