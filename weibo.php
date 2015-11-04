@@ -14,17 +14,26 @@ function wb_ouath_redirect(){
 function weibo_oauth(){
     $code = $_GET['code'];
     $url = "https://api.weibo.com/oauth2/access_token";
-    $data = "client_id=" . WB_APPID . "&client_secret=" . WB_APPSECRET . "&grant_type=authorization_code&redirect_uri=".urlencode (home_url())."&code=".$code;
-    $output = json_decode(oauth_http('post',array(),$url,$data));
-    $sina_access_token = $output->access_token;
-    $sina_uid = $output->uid;
+    $data = array('client_id' => WB_APPID,
+        'client_secret' => WB_APPSECRET,
+        'grant_type' => 'authorization_code',
+        'redirect_uri' => home_url(),
+        'code' => $code);
+    $response = wp_remote_post( $url, array(
+            'method' => 'POST',
+            'body' => $data,
+        )
+    );
+    $output = json_decode($response['body'],true);
+    $sina_access_token = $output['access_token'];
+    $sina_uid = $output['uid'];
     if(empty($sina_uid)){
         wp_redirect(home_url('/?3'.$sina_uid));
         exit;
     }
     $get_user_info = "https://api.weibo.com/2/users/show.json?uid=".$sina_uid."&access_token=".$sina_access_token;
-    $data = get_url_contents ( $get_user_info );
-    $str  = json_decode($data , true);
+    $data = wp_remote_get( $get_user_info );
+    $str  = json_decode($data['body'] , true);
     $username = $str['screen_name'];
     $avatar = $str['profile_image_url'];
     if(is_user_logged_in()){
@@ -36,7 +45,7 @@ function weibo_oauth(){
     }else{
         $user_weibo = get_users(array("meta_key "=>"sina_uid","meta_value"=>$sina_uid));
         if(is_wp_error($user_weibo) || !count($user_weibo)){
-            
+
             $login_name = wp_create_nonce($sina_uid);
             $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
             $userdata=array(
@@ -69,7 +78,7 @@ function social_oauth_weibo(){
     }
 
 }
-add_action('init','social_oauth_weibo')
+add_action('init','social_oauth_weibo');
 
 
 function weibo_oauth_url(){
