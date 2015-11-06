@@ -57,7 +57,7 @@ function douban_oauth(){
             db_ouath_redirect();
 
         }else{
-            wp_set_auth_cookie($user_weibo[0]->ID);
+            wp_set_auth_cookie($user_douban[0]->ID);
             db_ouath_redirect();
         }
     }
