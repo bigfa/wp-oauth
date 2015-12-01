@@ -13,4 +13,6 @@
 
 [Github登录](http://fatesinger.com/77059)
 
-[Instagram登录]( http://wpista.com/themes/instagram-oauth.html)
+[Instagram登录](http://wpista.com/themes/instagram-oauth.html)
+
+[微信公众号登录](https://fatesinger.com/77241)
