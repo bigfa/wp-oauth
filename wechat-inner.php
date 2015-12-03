@@ -12,7 +12,8 @@ function mpwechat_oauth(){
     $ss = json_decode($content,true);
     $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $ss['access_token'] . '&openid=' . $ss['openid'];
     $user_info = json_decode(file_get_contents($info_url),true);
-    $weixin_id = $user_info["unionid"];
+    $weixin_id = $user_info["openid"];
+    if(!$weixin_id) wp_die('sth wrong');
     if(is_user_logged_in()){
         $this_user = wp_get_current_user();
         update_user_meta($this_user->ID ,"weixin_uid",$weixin_id);
