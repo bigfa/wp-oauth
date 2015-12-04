@@ -27,6 +27,7 @@ function github_oauth(){
     );
     $output = json_decode($response['body'],true);
     $token = $output['access_token'];
+    if(!$token) wp_die('授权失败');
     $get_user_info = "https://api.github.com/user?access_token=".$token;
     $datas = wp_remote_get( $get_user_info );
     $str = json_decode($datas['body'] , true);

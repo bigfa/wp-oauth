@@ -10,16 +10,17 @@ function wechat_oauth(){
     $ss = json_decode($content,true);
     $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $ss['access_token'] . '&openid=' . $ss['openid'];
     $user_info = json_decode(file_get_contents($info_url),true);
-    $weixin_id = $user_info["unionid"];
+    $weixin_id = $user_info["openid"];
+    if(!$weixin_id) wp_die('授权时发生错误');
     if(is_user_logged_in()){
         $this_user = wp_get_current_user();
         update_user_meta($this_user->ID ,"weixin_uid",$weixin_id);
         update_user_meta($this_user->ID ,"weixin_avatar",$user_info['headimgurl']);
         echo '<script>if( window.opener ) {window.opener.location.reload();
-						window.close();
-						}else{
-						window.location.href = "' . home_url() . '";
-						}</script>';
+                        window.close();
+                        }else{
+                        window.location.href = "' . home_url() . '";
+                        }</script>';
     }else{
         $oauth_user = get_users(array("meta_key "=>"weixin_uid","meta_value"=>$weixin_id));
         if(is_wp_error($oauth_user) || !count($oauth_user)){
@@ -37,33 +38,33 @@ function wechat_oauth(){
             update_user_meta($user_id ,"weixin_uid",$weixin_id);
             update_user_meta($user_id ,"weixin_avatar",$user_info['headimgurl']);
             echo '<script>if( window.opener ) {window.opener.location.reload();
-						window.close();
-						}else{
-						window.location.href = "' . home_url() . '";
-						}</script>';
+                        window.close();
+                        }else{
+                        window.location.href = "' . home_url() . '";
+                        }</script>';
 
         }else{
             wp_set_auth_cookie($oauth_user[0]->ID);
             echo '<script>if( window.opener ) {window.opener.location.reload();
-						window.close();
-						}else{
-						window.location.href = "' . home_url() . '";
-						}</script>';
+                        window.close();
+                        }else{
+                        window.location.href = "' . home_url() . '";
+                        }</script>';
         }
     }
 }
 
 
-    if (isset($_GET['code'])){
-        wechat_oauth();
-    }
+if (isset($_GET['code'])){
+    wechat_oauth();
+}
 
 
 function wechat_oauth_url(){
     $_SESSION ['state'] = md5 ( uniqid ( rand (), true ) );
     $appkey = '';
     $url = 'https://open.weixin.qq.com/connect/qrconnect?appid='. WX_APPID .'&redirect_uri='. urlencode (get_template_directory_uri() ) .'/wechat.php&response_type=code&scope=snsapi_login&state=' . $_SESSION ['state'] . '#wechat_redirect';
-	return $url;
+    return $url;
 }
 
 echo wechat_oauth_url();
