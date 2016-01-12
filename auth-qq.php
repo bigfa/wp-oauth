@@ -18,6 +18,9 @@ function qq_oauth(){
     $code = $_GET['code'];
     $token_url = "https://graph.qq.com/oauth2.0/token?client_id=" . QQ_APPID . "&client_secret=" . QQ_APPSECRET . "&grant_type=authorization_code&redirect_uri=".urlencode (home_url())."&code=".$code;
     $response = wp_remote_get( $token_url );
+    if (is_wp_error($response)) {
+        die($response->get_error_message());
+    }
     $response = $response['body'];
     if (strpos ( $response, "callback" ) !== false) {
         wp_redirect(home_url());
