@@ -8,10 +8,11 @@ require( dirname(__FILE__) . '/../../../wp-load.php' );
 function mpwechat_oauth(){
     $code = $_GET['code'];
     $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" . WXMP_APPID . "&secret=" . WXMP_APPSECRET . "&code=" . $code . "&grant_type=authorization_code";
-    $content = file_get_contents($url);
-    $ss = json_decode($content,true);
+    $content = wp_remote_get($url);
+    $ss = json_decode($content['body'],true);
     $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $ss['access_token'] . '&openid=' . $ss['openid'];
-    $user_info = json_decode(file_get_contents($info_url),true);
+    $content1 = wp_remote_get($info_url);
+    $user_info = json_decode($content1['body'],true);
     $weixin_id = $user_info["openid"];
     if(!$weixin_id) wp_die('sth wrong');
     if(is_user_logged_in()){
