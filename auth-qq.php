@@ -4,33 +4,6 @@ define('QQ_APPID','');//appkey
 define('QQ_APPSECRET','');//appsecret
 require( dirname(__FILE__) . '/wp-load.php' );
 
-class core_qq_login {
-    protected function __construct() {
-        $this->add_actions();
-        register_activation_hook($this->my_plugin_basename(), array( $this, 'ga_activation_hook' ) );
-    }
-
-    public function qq_login_redirect($redirect_to, $request_from, $user) {
-        if ($user && !is_wp_error($user)) {
-            $final_redirect = $this->getFinalRedirect();
-            if ($final_redirect !== '') {
-                return $final_redirect;
-            }
-        }
-        return $redirect_to;
-    }
-
-    protected function add_actions() {
-
-        add_filter('authenticate', array($this, 'ga_authenticate'), 5, 3);
-        
-        add_filter('login_redirect', array($this, 'ga_login_redirect'), 5, 3 );
-        add_action('init', array($this, 'ga_init'), 1);
-
-    }
-}
-
-
 function fa_qq_oauth_redirect(){
     echo '<script>if( window.opener ) {window.opener.location.reload();
                         window.close();
