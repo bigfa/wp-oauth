@@ -2,14 +2,17 @@
 
 define('QQ_APPID','');//appkey
 define('QQ_APPSECRET','');//appsecret
+
 require( dirname(__FILE__) . '/wp-load.php' );
 
+// edit this function if you wanna redirect to other url.
 function fa_qq_oauth_redirect(){
-    echo '<script>if( window.opener ) {window.opener.location.reload();
-                        window.close();
-                        }else{
-                        window.location.href = "'.home_url().'";
-                        }</script>';
+    echo '<script>if (window.opener) {
+    window.opener.location.reload();
+    window.close()
+} else {
+    window.location.href = "'.home_url().'"
+}</script>';
 }
 
 
@@ -55,35 +58,45 @@ function qq_oauth(){
     $avatar = $data['figureurl_2'];
 
     if(is_user_logged_in()){
+
         $this_user = wp_get_current_user();
         update_user_meta($this_user->ID ,"qq_openid",$qq_openid);
         update_user_meta($this_user->ID ,"qq_avatar",$avatar);
         fa_qq_oauth_redirect();
+
     } else {
-        $user_qq = get_users(array("meta_key "=>"qq_openid","meta_value"=>$qq_openid));
-        if(is_wp_error($user_qq) || !count($user_qq)){
+        $user_qq = get_users(array('meta_key'=>'qq_openid',
+            'meta_value'=>$qq_openid,
+            ));
+
+        if( is_wp_error($user_qq) || !count($user_qq ) ) {
+
             $login_name = wp_create_nonce($qq_openid);
-            $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
+            $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );         
             $userdata=array(
-                'user_login' => $login_name,
+                'user_login' => 'qq' . $login_name,
                 'display_name' => $username,
                 'user_pass' => $random_password,
                 'nick_name' => $username
             );
+
             $user_id = wp_insert_user( $userdata );
+
             wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);
+
             update_user_meta($user_id ,"qq_openid",$qq_openid);
             update_user_meta($user_id ,"qq_avatar",$avatar);
             fa_qq_oauth_redirect();
+
         } else {
+
             wp_set_auth_cookie($user_qq[0]->ID);
             update_user_meta($user_qq[0]->ID ,"qq_avatar",$avatar);
             fa_qq_oauth_redirect();
+
         }
     }
 }
-
-if (isset($_GET ['state']) && isset($_GET ['code'])) qq_oauth();
 
 function qq_oauth_url(){
 
@@ -91,4 +104,6 @@ function qq_oauth_url(){
     return $url;
 }
 
-echo qq_oauth_url();
+if (isset($_GET ['state']) && isset($_GET ['code'])) qq_oauth();
+
+if (isset($_GET ['showurl']) ) echo qq_oauth_url();
