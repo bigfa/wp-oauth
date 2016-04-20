@@ -2,30 +2,43 @@
 
 define('WX_APPID','');
 define('WX_APPSECRET','');
+
 require( dirname(__FILE__) . '/../../../wp-load.php' );
+
+function wechat_oauth_redirect(){
+    $url = home_url();
+    wp_redirect( $url );
+    exit;
+}
+
 function wechat_oauth(){
+
+    if(!isset($_GET['code'])) wp_die('code empty.');
+
     $code = $_GET['code'];
-    $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" . WX_APPID . "&secret=" . WX_APPSECRET . "&code=" . $code . "&grant_type=authorization_code";
-    $content = file_get_contents($url);
-    $ss = json_decode($content,true);
-    $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $ss['access_token'] . '&openid=' . $ss['openid'];
+
+    $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . WX_APPID . '&secret=' . WX_APPSECRET . '&code=' . $code . '&grant_type=authorization_code';
+
+    $json_token = json_decode(file_get_contents($url),true);
+
+    $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $json_token['access_token'] . '&openid=' . $json_token['openid'];
+
     $user_info = json_decode(file_get_contents($info_url),true);
-    $weixin_id = $user_info["openid"];
+
+    $weixin_id = $user_info['openid'];
+
     if(!$weixin_id) wp_die('授权时发生错误');
+
     if(is_user_logged_in()){
         $this_user = wp_get_current_user();
-        update_user_meta($this_user->ID ,"weixin_uid",$weixin_id);
-        update_user_meta($this_user->ID ,"weixin_avatar",$user_info['headimgurl']);
-        echo '<script>if( window.opener ) {window.opener.location.reload();
-                        window.close();
-                        }else{
-                        window.location.href = "' . home_url() . '";
-                        }</script>';
+        update_user_meta($this_user->ID ,'weixin_uid',$weixin_id);
+        update_user_meta($this_user->ID ,'weixin_avatar',$user_info['headimgurl']);
+        wechat_oauth_redirect();
     }else{
-        $oauth_user = get_users(array("meta_key "=>"weixin_uid","meta_value"=>$weixin_id));
+        $oauth_user = get_users(array('meta_key'=>'weixin_uid','meta_value'=>$weixin_id));
         if(is_wp_error($oauth_user) || !count($oauth_user)){
-            $username = $user_info["nickname"];
-            $login_name = wp_create_nonce($weixin_id);
+            $username = $user_info['nickname'];
+            $login_name = 'wx' . wp_create_nonce($weixin_id);
             $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
             $userdata=array(
                 'user_login' => $login_name,
@@ -37,19 +50,11 @@ function wechat_oauth(){
             wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);
             update_user_meta($user_id ,"weixin_uid",$weixin_id);
             update_user_meta($user_id ,"weixin_avatar",$user_info['headimgurl']);
-            echo '<script>if( window.opener ) {window.opener.location.reload();
-                        window.close();
-                        }else{
-                        window.location.href = "' . home_url() . '";
-                        }</script>';
+            wechat_oauth_redirect();
 
         }else{
             wp_set_auth_cookie($oauth_user[0]->ID);
-            echo '<script>if( window.opener ) {window.opener.location.reload();
-                        window.close();
-                        }else{
-                        window.location.href = "' . home_url() . '";
-                        }</script>';
+            wechat_oauth_redirect();
         }
     }
 }
