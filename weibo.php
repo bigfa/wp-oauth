@@ -4,34 +4,45 @@ define('WB_APPID','');//appkey
 define('WB_APPSECRET','');//appsecret
 
 function wb_ouath_redirect(){
-    echo '<script>
-if (window.opener) {
-    window.opener.location.reload();
-    window.close();
-} else {
-    window.location.href = "'.home_url().'";
-} </script>';
+    $url = home_url();
+    wp_redirect( $url );
+    exit;
 }
 
-function weibo_oauth(){
-    $code = $_GET['code'];
+function wb_get_access_token($code){
     $url = "https://api.weibo.com/oauth2/access_token";
+
     $data = array('client_id' => WB_APPID,
         'client_secret' => WB_APPSECRET,
         'grant_type' => 'authorization_code',
         'redirect_uri' => home_url(),
         'code' => $code);
+
     $response = wp_remote_post( $url, array(
             'method' => 'POST',
             'body' => $data,
         )
     );
+
     $output = json_decode($response['body'],true);
+    return $output;
+}
+
+function weibo_oauth(){
+
+    if(!isset($_GET['code'])) wp_die('code empty.');
+
+    $code = $_GET['code'];
+
+    $output = wb_get_access_token($code);
+
     $sina_access_token = $output['access_token'];
     $sina_uid = $output['uid'];
+
     if(empty($sina_uid)){
         wp_die('服务器响应错误。');
     }
+
     $get_user_info_url = "https://api.weibo.com/2/users/show.json?uid=".$sina_uid."&access_token=".$sina_access_token;
     $usersina = wp_remote_get( $get_user_info_url );
     $userinfo  = json_decode($usersina['body'] , true);
