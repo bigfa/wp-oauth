@@ -4,11 +4,8 @@ define('DB_APPID','');//appkey
 define('DB_APPSECRET','');//appsecret
 
 function db_ouath_redirect(){
-    echo '<script>if( window.opener ) {window.opener.location.reload();
-                        window.close();
-                        }else{
-                        window.location.href = "'.home_url().'";
-                        }</script>';
+    wp_redirect( home_url() );
+    exit;
 }
 
 function douban_oauth(){
