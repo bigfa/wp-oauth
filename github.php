@@ -3,11 +3,8 @@ define('GITHUB_APPID','');//appkey
 define('GITHUB_APPSECRET','');//appsecret
 
 function github_ouath_redirect(){
-    echo '<script>if( window.opener ) {window.opener.location.reload();
-                        window.close();
-                        }else{
-                        window.location.href = "'.home_url().'";
-                        }</script>';
+    wp_redirect( home_url() );
+    exit;
 }
 
 function github_oauth(){
