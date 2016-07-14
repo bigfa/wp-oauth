@@ -15,7 +15,7 @@ function wechat_oauth_redirect(){
 function get_wechat_access_token(){
     $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . WX_APPID . '&secret=' . WX_APPSECRET . '&code=' . $code . '&grant_type=authorization_code';
 
-    return = json_decode(file_get_contents($url),true);
+    return json_decode(file_get_contents($url),true);
 }
 
 function wechat_oauth(){
