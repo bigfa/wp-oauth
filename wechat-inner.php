@@ -10,7 +10,7 @@ require( dirname(__FILE__) . '/../../../wp-load.php' );
 function get_mp_access_token(){
     $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . WXMP_APPID . '&secret=' . WXMP_APPSECRET . '&code=' . $code . '&grant_type=authorization_code';
     $response = file_get_contents( $url );
-    return json_decode($response);
+    return json_decode($response,true);
 }
 
 function mpwechat_oauth(){
