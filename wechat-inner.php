@@ -7,7 +7,8 @@ define('WXMP_KEY','weixin_uid');
 require( dirname(__FILE__) . '/../../../wp-load.php' );
 
 // get access token
-function get_mp_access_token(){
+function get_mp_access_token( $code = null ){
+    if (!$code) return;
     $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . WXMP_APPID . '&secret=' . WXMP_APPSECRET . '&code=' . $code . '&grant_type=authorization_code';
     $response = file_get_contents( $url );
     return json_decode($response,true);
@@ -18,7 +19,7 @@ function mpwechat_oauth(){
 
     $code = $_GET['code'];
 
-    $json_token = get_mp_access_token();
+    $json_token = get_mp_access_token($code);
     if (!$json_token['openid']) wp_die('授权失败，请尝试重新授权');
     $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $json_token['access_token'] . '&openid=' . $json_token['openid'];
     $user_info = json_decode(file_get_contents($info_url),true);
