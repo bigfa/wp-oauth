@@ -48,7 +48,7 @@ function ins_oauth(){
                 'display_name' => $name,
                 'user_email' => '',
                 'user_pass' => $random_password,
-                'nick_name' => $name
+                'nickname' => $name
             );
             $user_id = wp_insert_user( $userdata );
             wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);

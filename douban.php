@@ -45,7 +45,7 @@ function douban_oauth(){
                 'display_name' => $username,
                 'user_email' => $str['uid'] .'@fatesinger.com',
                 'user_pass' => $random_password,
-                'nick_name' => $username
+                'nickname' => $username
             );
             $user_id = wp_insert_user( $userdata );
             wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);

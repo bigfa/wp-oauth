@@ -64,7 +64,7 @@ function weibo_oauth(){
                 'user_login' => $login_name,
                 'display_name' => $username,
                 'user_pass' => $random_password,
-                'nick_name' => $username
+                'nickname' => $username
             );
             $user_id = wp_insert_user( $userdata );
             wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);
