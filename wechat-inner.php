@@ -65,7 +65,7 @@ if (isset($_GET['code'])){
 
 function mpwechat_oauth_url(){
 
-    $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='. WXMP_APPID .'&redirect_uri='. urlencode ( get_template_directory_uri() ) .'/wechat-inner.php&response_type=code&scope=snsapi_userinfo&state=' . urlencode ( $_SERVER["HTTP_REFERER"] ) . '#wechat_redirect';
+    $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='. WXMP_APPID .'&redirect_uri='. urlencode ( get_template_directory_uri() . '/' ) .'wechat-inner.php&response_type=code&scope=snsapi_userinfo&state=' . urlencode ( $_SERVER["HTTP_REFERER"] ) . '#wechat_redirect';
     return $url;
 }
 

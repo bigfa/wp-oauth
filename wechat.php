@@ -73,7 +73,7 @@ if (isset($_GET['code'])){
 function wechat_oauth_url(){
     $_SESSION ['state'] = md5 ( uniqid ( rand (), true ) );
     $appkey = '';
-    $url = 'https://open.weixin.qq.com/connect/qrconnect?appid='. WX_APPID .'&redirect_uri='. urlencode (get_template_directory_uri() ) .'/wechat.php&response_type=code&scope=snsapi_login&state=' . $_SESSION ['state'] . '#wechat_redirect';
+    $url = 'https://open.weixin.qq.com/connect/qrconnect?appid='. WX_APPID .'&redirect_uri='. urlencode (get_template_directory_uri() . '/' ) .'wechat.php&response_type=code&scope=snsapi_login&state=' . $_SESSION ['state'] . '#wechat_redirect';
     return $url;
 }
 
