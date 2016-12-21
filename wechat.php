@@ -12,7 +12,8 @@ function wechat_oauth_redirect(){
     exit;
 }
 
-function get_wechat_access_token(){
+function get_wechat_access_token( $code = null ){
+    $code = $code ? $code : $_GET['code'];
     $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . WX_APPID . '&secret=' . WX_APPSECRET . '&code=' . $code . '&grant_type=authorization_code';
 
     return json_decode(file_get_contents($url),true);
@@ -24,7 +25,7 @@ function wechat_oauth(){
 
     $code = $_GET['code'];
 
-    $json_token = get_wechat_access_token();
+    $json_token = get_wechat_access_token( $code );
 
     $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $json_token['access_token'] . '&openid=' . $json_token['openid'];
 
