@@ -3,7 +3,7 @@
 define('DB_APPID','');//appkey
 define('DB_APPSECRET','');//appsecret
 
-function db_ouath_redirect(){
+function db_oauth_redirect(){
     wp_redirect( home_url() );
     exit;
 }
@@ -11,11 +11,13 @@ function db_ouath_redirect(){
 function douban_oauth(){
     $code = $_GET['code'];
     $url = "https://www.douban.com/service/auth2/token";
-    $data = array('client_id' => WB_APPID,
+    $data = array(
+        'client_id' => WB_APPID,
         'client_secret' => WB_APPSECRET,
         'grant_type' => 'authorization_code',
         'redirect_uri' => home_url(),
-        'code' => $code);
+        'code' => $code
+    );
     $response = wp_remote_post( $url, array(
             'method' => 'POST',
             'body' => $data,
@@ -32,7 +34,10 @@ function douban_oauth(){
         update_user_meta($this_user->ID ,"douban_id",$douban_id);
         db_ouath_redirect();
     }else{
-        $user_douban = get_users(array("meta_key "=>"douban_id","meta_value"=>$douban_uid));
+        $user_douban = get_users(array(
+            "meta_key "=>"douban_id",
+            "meta_value"=>$douban_uid
+        ));
         if(is_wp_error($user_douban) || !count($user_douban)){
             $get_user_info = "http://api.douban.com/labs/bubbler/user/".$douban_id;
             $datas = wp_remote_get( $get_user_info );
@@ -48,13 +53,16 @@ function douban_oauth(){
                 'nickname' => $username
             );
             $user_id = wp_insert_user( $userdata );
-            wp_signon(array("user_login"=>$login_name,"user_password"=>$random_password),false);
+            wp_signon(array(
+                "user_login"=>$login_name,
+                "user_password"=>$random_password
+            ),false);
             update_user_meta($user_id ,"douban_id",$douban_id);
-            db_ouath_redirect();
+            db_oauth_redirect();
 
         }else{
             wp_set_auth_cookie($user_douban[0]->ID);
-            db_ouath_redirect();
+            db_oauth_redirect();
         }
     }
 }
